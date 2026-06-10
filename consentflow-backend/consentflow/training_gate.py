@@ -242,13 +242,14 @@ class TrainingGateConsumer:
     # ── Main consume loop ─────────────────────────────────────────────────────
 
     async def run(self) -> None: 
-        global _consumer_healthy  # pragma: no cover
+          # pragma: no cover
         """
         Continuously consume ``consent.revoked`` events until cancelled.
 
         This method is designed to run as a long-lived asyncio task.
         It handles ``asyncio.CancelledError`` gracefully (clean shutdown).
         """
+        global _consumer_healthy
         logger.info(
             "Training gate consumer started — topic=%s  broker=%s",
             settings.kafka_topic_revoke,
@@ -329,7 +330,6 @@ async def _send_to_dlq(raw_value: bytes | dict | str, reason: str) -> None:
     """Send an unprocessable message to the dead-letter topic."""
     try:
         from aiokafka import AIOKafkaProducer
-        import json
 
         dlq_topic = settings.kafka_topic_dlq  # add this to your settings/config
         payload = json.dumps({
